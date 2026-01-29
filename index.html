@@ -257,9 +257,11 @@
         <div class="controls">
             <select id="t1-select" onchange="handlePromptSelection('t1', this.value)">
                 <option value="" disabled selected>Select Task 1 Prompt...</option>
-                <option value="0">Prompt 1: Bar Chart</option>
-                <option value="1">Prompt 2: Line Graph</option>
-                <option value="2">Prompt 3: Pie Charts</option>
+                <option value="0">Prompt 1: Bar Chart (Forecast)</option>
+                <option value="1">Prompt 2: Line Graph (Metal Prices)</option>
+                <option value="2">Prompt 3: Pie Charts (Energy Capacity)</option>
+                <option value="3">Prompt 4: Map (City Changes)</option>
+                <option value="4">Prompt 5: Table (Smoking Habits)</option>
             </select>
             <div id="t1-timer" class="timer">20:00</div>
             <div>
@@ -289,6 +291,8 @@
                 <option value="Topic 1">1. Education: Free University?</option>
                 <option value="Topic 2">2. Environment: Fuel Prices</option>
                 <option value="Topic 3">3. Technology: Remote Work</option>
+                <option value="Topic 4">4. Crime: Youth Crime</option>
+                <option value="Topic 5">5. Government: Arts vs Public Services</option>
             </select>
             <div id="t2-timer" class="timer">40:00</div>
             <div>
@@ -314,15 +318,22 @@
 
 <script>
     // --- BASIC CONFIG ---
+    // Restored all 5 images for Task 1
     const imageUrls = [
         "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%201.png?raw=true",
         "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%202.png?raw=true",
-        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%203.png?raw=true"
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%203.png?raw=true",
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%204.png?raw=true",
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%205.png?raw=true"
     ];
+    
+    // Restored all 5 topics for Task 2
     const task2Prompts = {
         "Topic 1": "Some people believe that university education should be free for everyone. Discuss both views and give your opinion.",
         "Topic 2": "The best way to solve the world's environmental problems is to increase the price of fuel. To what extent do you agree or disagree?",
-        "Topic 3": "Nowadays, many people work from home using modern technology. Discuss the advantages and disadvantages of this trend."
+        "Topic 3": "Nowadays, many people work from home using modern technology. Discuss the advantages and disadvantages of this trend.",
+        "Topic 4": "In many countries, the amount of crime committed by teenagers is increasing. What do you think are the causes of this? What solutions can you suggest?",
+        "Topic 5": "Government investment in the arts, such as music and theatre, is a waste of money. Governments should invest this money in public services instead. To what extent do you agree?"
     };
 
     let intervals = {};
