@@ -34,6 +34,7 @@
             flex-direction: column;
             padding: 20px 0;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .sidebar-header {
@@ -112,13 +113,15 @@
             color: var(--primary);
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 10px;
+            font-size: 1.1rem;
         }
 
         .vocab-item {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
         }
 
-        .vocab-item strong { color: var(--secondary); }
+        .vocab-item strong { color: var(--secondary); display: block; margin-bottom: 2px; }
 
         /* --- Simulator Components --- */
         .timer-display {
@@ -142,15 +145,11 @@
         }
 
         textarea {
-            height: 450px;
-            font-family: 'Georgia', serif;
+            height: 400px;
+            font-family: 'Times New Roman', serif;
             line-height: 1.6;
             margin-top: 20px;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
+            resize: vertical;
         }
 
         .action-bar {
@@ -161,7 +160,7 @@
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 6px;
             border: none;
             font-weight: 600;
@@ -172,28 +171,30 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-accent { background: var(--accent); color: white; }
         .btn-danger { background: var(--danger); color: white; }
+        .btn-ghost { background: #e2e8f0; color: var(--text-main); }
 
-        /* --- Feedback Modal --- */
-        #feedback-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); z-index: 1000; justify-content: center; align-items: center;
-        }
-        .modal-body { background: white; width: 90%; max-width: 700px; padding: 30px; border-radius: 12px; max-height: 80vh; overflow-y: auto; }
-
-        @keyframes pulse { 50% { opacity: 0.6; } }
-
-        /* Hide sections initially */
+        /* Section Visibility */
         .content-section { display: none; }
         .content-section.active { display: block; }
+
+        #t1-img-container {
+            margin: 20px 0;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        #t1-image { max-width: 100%; height: auto; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <nav class="sidebar">
     <div class="sidebar-header">
-        <h2>IELTS SIM</h2>
+        <h2>IELTS MASTER</h2>
     </div>
-    <button class="nav-btn active" onclick="showSection('task1')">📊 Task 1: Report</button>
+    <button class="nav-btn active" onclick="showSection('task1')">📊 Task 1: Data</button>
     <button class="nav-btn" onclick="showSection('task2')">✍️ Task 2: Essay</button>
     <button class="nav-btn" onclick="showSection('study-tools')">📚 Study Tools</button>
 </nav>
@@ -203,82 +204,83 @@
         
         <div id="task1" class="content-section active">
             <div class="card">
-                <h2>Academic Task 1</h2>
+                <h2>Academic Task 1 (20 Mins)</h2>
                 <select id="t1-select" onchange="handlePromptSelection('t1', this.value)">
-                    <option value="" disabled selected>Choose a data visual...</option>
-                    <option value="0">Bar Chart: Energy Forecast</option>
-                    <option value="1">Line Graph: Metal Prices</option>
-                    <option value="2">Pie Chart: Energy Capacity</option>
-                    <option value="3">Map: City Evolution</option>
+                    <option value="" disabled selected>Select Task 1 Prompt...</option>
+                    <option value="0">Prompt 1: Bar Chart (Forecast)</option>
+                    <option value="1">Prompt 2: Line Graph (Metal Prices)</option>
+                    <option value="2">Prompt 3: Pie Charts (Energy Capacity)</option>
+                    <option value="3">Prompt 4: Map (City Changes)</option>
+                    <option value="4">Prompt 5: Table (Smoking Habits)</option>
                 </select>
                 <div id="t1-timer" class="timer-display">20:00</div>
                 <div class="action-bar">
-                    <button class="btn btn-primary" onclick="initiateTimer('t1', 20)">Start Test</button>
-                    <button class="btn btn-danger" onclick="finishTask('t1')">Finish</button>
-                    <span style="margin-left: auto;">Words: <strong id="t1-words">0</strong></span>
+                    <button class="btn btn-primary" id="t1-start" onclick="initiateTimer('t1', 20)">Start Timer</button>
+                    <button class="btn btn-danger" id="t1-finish" onclick="finishTask('t1')" disabled>Finish Early</button>
+                    <button class="btn btn-ghost" onclick="resetTask('t1')">Reset</button>
                 </div>
-                <div id="t1-img-container" style="display:none; margin-top:20px; text-align:center;">
-                    <img id="t1-image" src="" style="max-width:100%; border-radius:8px;">
+                <div id="t1-img-container" style="display:none;">
+                    <img id="t1-image" src="" alt="Data Visual">
                 </div>
-                <textarea id="t1-text" placeholder="Start typing your report here..."></textarea>
+                <textarea id="t1-text" placeholder="Your report must be at least 150 words..."></textarea>
                 <div class="action-bar">
-                    <button class="btn btn-accent" onclick="generateFeedback('t1')">Analyze My Report</button>
+                    <span id="t1-status">Status: Waiting</span>
+                    <button class="btn btn-accent" style="margin-left:auto" onclick="generateFeedback('t1')">Analyze Report</button>
+                    <span>Words: <strong id="t1-words">0</strong></span>
                 </div>
             </div>
         </div>
 
         <div id="task2" class="content-section">
             <div class="card">
-                <h2>Academic Task 2</h2>
+                <h2>Academic Task 2 (40 Mins)</h2>
                 <select id="t2-select" onchange="handlePromptSelection('t2', this.value)">
-                    <option value="" disabled selected>Choose an essay topic...</option>
-                    <option value="Topic 1">Education: Free University</option>
-                    <option value="Topic 2">Environment: Fuel Tax</option>
-                    <option value="Topic 3">Technology: Remote Work</option>
+                    <option value="" disabled selected>Select Task 2 Prompt...</option>
+                    <option value="Topic 1">1. Education: Free University?</option>
+                    <option value="Topic 2">2. Environment: Fuel Prices</option>
+                    <option value="Topic 3">3. Technology: Remote Work</option>
+                    <option value="Topic 4">4. Crime: Youth Crime</option>
+                    <option value="Topic 5">5. Government: Arts vs Public Services</option>
                 </select>
                 <div id="t2-timer" class="timer-display">40:00</div>
-                <div id="t2-prompt-display" style="padding:15px; background:#f1f5f9; border-radius:8px; margin: 15px 0; display:none;"></div>
+                <div id="t2-prompt-display" style="padding:15px; background:#f8fafc; border-left:4px solid var(--primary); margin-bottom:15px; display:none; font-style:italic;"></div>
                 <div class="action-bar">
-                    <button class="btn btn-primary" onclick="initiateTimer('t2', 40)">Start Test</button>
-                    <button class="btn btn-danger" onclick="finishTask('t2')">Finish</button>
-                    <span style="margin-left: auto;">Words: <strong id="t2-words">0</strong></span>
+                    <button class="btn btn-primary" id="t2-start" onclick="initiateTimer('t2', 40)">Start Timer</button>
+                    <button class="btn btn-danger" id="t2-finish" onclick="finishTask('t2')" disabled>Finish Early</button>
+                    <button class="btn btn-ghost" onclick="resetTask('t2')">Reset</button>
                 </div>
-                <textarea id="t2-text" placeholder="Start typing your essay here..."></textarea>
+                <textarea id="t2-text" placeholder="Your essay must be at least 250 words..."></textarea>
                 <div class="action-bar">
-                    <button class="btn btn-accent" onclick="generateFeedback('t2')">Analyze My Essay</button>
+                    <span id="t2-status">Status: Waiting</span>
+                    <button class="btn btn-accent" style="margin-left:auto" onclick="generateFeedback('t2')">Analyze Essay</button>
+                    <span>Words: <strong id="t2-words">0</strong></span>
                 </div>
             </div>
         </div>
 
         <div id="study-tools" class="content-section">
             <div class="card">
-                <h2>IELTS Writing Toolkit</h2>
+                <h2>Study Resources</h2>
                 <div class="tools-grid">
                     <div class="tool-box">
-                        <h3>Task 1: Trends</h3>
-                        <div class="vocab-item">
-                            <strong>Upward:</strong> skyrocketed, surged, climbed gradually.
-                        </div>
-                        <div class="vocab-item">
-                            <strong>Downward:</strong> plummeted, dipped, slumped.
-                        </div>
-                        <div class="vocab-item">
-                            <strong>Stability:</strong> remained constant, leveled off.
-                        </div>
-                        <p><em>Tip: Never give your opinion in Task 1! Only report the data.</em></p>
+                        <h3>Task 1 Vocabulary</h3>
+                        <div class="vocab-item"><strong>Trends:</strong> skyrocketed, fluctuated wildly, plateaued, hit a trough.</div>
+                        <div class="vocab-item"><strong>Comparisons:</strong> in stark contrast, respectively, marginally higher.</div>
+                        <div class="vocab-item"><strong>Maps:</strong> demolished, modernized, transformed into, adjacent to.</div>
                     </div>
                     <div class="tool-box">
-                        <h3>Task 2: Connectors</h3>
-                        <div class="vocab-item">
-                            <strong>Contrast:</strong> Conversely, Nevertheless, Despite this.
-                        </div>
-                        <div class="vocab-item">
-                            <strong>Addition:</strong> Furthermore, Moreover, In addition.
-                        </div>
-                        <div class="vocab-item">
-                            <strong>Conclusion:</strong> To encapsulate, In light of these facts.
-                        </div>
-                        <p><em>Tip: Use the 'PEEL' method for paragraphs (Point, Evidence, Explain, Link).</em></p>
+                        <h3>Task 2 Vocabulary</h3>
+                        <div class="vocab-item"><strong>Agreement:</strong> I am of the opinion that, It is undeniably true that.</div>
+                        <div class="vocab-item"><strong>Solutions:</strong> A viable remedy would be, To mitigate this issue.</div>
+                        <div class="vocab-item"><strong>Impact:</strong> Profound implications, detrimental effects, far-reaching.</div>
+                    </div>
+                    <div class="tool-box">
+                        <h3>Task 1 Strategy</h3>
+                        <p style="font-size:0.85rem">1. <strong>Introduction:</strong> Paraphrase the prompt.<br>2. <strong>Overview:</strong> Mention 2 main trends (no data yet).<br>3. <strong>Details:</strong> Use specific numbers and units.</p>
+                    </div>
+                    <div class="tool-box">
+                        <h3>Task 2 Strategy</h3>
+                        <p style="font-size:0.85rem">1. <strong>Intro:</strong> Hook, Background, Thesis.<br>2. <strong>Body 1:</strong> Point + Evidence + Example.<br>3. <strong>Body 2:</strong> Counter or Second Point.<br>4. <strong>Conclusion:</strong> Summarize main ideas.</p>
                     </div>
                 </div>
             </div>
@@ -287,38 +289,31 @@
     </div>
 </main>
 
-<div id="feedback-modal">
-    <div class="modal-body">
-        <h2 id="modal-title">Writing Analysis</h2>
-        <div id="feedback-content"></div>
-        <button class="btn btn-primary" style="margin-top:20px" onclick="document.getElementById('feedback-modal').style.display='none'">Close</button>
-    </div>
-</div>
-
 <script>
-    // Logic for Section Switching
+    const imageUrls = [
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%201.png?raw=true",
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%202.png?raw=true",
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%203.png?raw=true",
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%204.png?raw=true",
+        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%205.png?raw=true"
+    ];
+
+    const task2Prompts = {
+        "Topic 1": "Some people believe that university education should be free for everyone. Discuss both views and give your opinion.",
+        "Topic 2": "The best way to solve the world's environmental problems is to increase the price of fuel. To what extent do you agree or disagree?",
+        "Topic 3": "Nowadays, many people work from home using modern technology. Discuss the advantages and disadvantages of this trend.",
+        "Topic 4": "In many countries, the amount of crime committed by teenagers is increasing. What do you think are the causes of this? What solutions can you suggest?",
+        "Topic 5": "Government investment in the arts, such as music and theatre, is a waste of money. Governments should invest this money in public services instead. To what extent do you agree?"
+    };
+
+    let intervals = {};
+
     function showSection(id) {
         document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.currentTarget.classList.add('active');
     }
-
-    // Reuse your existing logic for timers and data
-    const imageUrls = [
-        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%201.png?raw=true",
-        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%202.png?raw=true",
-        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%203.png?raw=true",
-        "https://github.com/khr824/wp/blob/f4fbae73ee6118905ce46eb9060beada2a16a45e/image%204.png?raw=true"
-    ];
-
-    const task2Prompts = {
-        "Topic 1": "University education should be free for everyone. Discuss both views.",
-        "Topic 2": "Increasing fuel prices is the best way to solve environmental problems. Agree or Disagree?",
-        "Topic 3": "Remote work is the future of employment. Discuss advantages and disadvantages."
-    };
-
-    let intervals = {};
 
     function handlePromptSelection(id, val) {
         if(id === 't1') {
@@ -332,7 +327,11 @@
     }
 
     function initiateTimer(id, mins) {
+        if(!document.getElementById(id+'-select').value) return alert('Please select a topic first.');
         const end = Date.now() + (mins*60*1000);
+        document.getElementById(id+'-start').disabled = true;
+        document.getElementById(id+'-finish').disabled = false;
+        document.getElementById(id+'-status').textContent = "Status: Writing...";
         runTimer(id, end);
     }
 
@@ -340,8 +339,11 @@
         const disp = document.getElementById(id+'-timer');
         intervals[id] = setInterval(() => {
             const rem = Math.ceil((end - Date.now())/1000);
-            if(rem <= 0) { clearInterval(intervals[id]); disp.textContent="00:00"; }
-            else {
+            if(rem <= 0) {
+                clearInterval(intervals[id]);
+                disp.textContent="00:00";
+                finishTask(id);
+            } else {
                 let m = Math.floor(rem/60), s = rem%60;
                 disp.textContent = (m<10?"0"+m:m) + ":" + (s<10?"0"+s:s);
                 if(rem < 60) disp.classList.add('warning');
@@ -350,33 +352,30 @@
     }
 
     function updateWordCount(id) {
-        const text = document.getElementById(id+'-text').value.trim();
-        const count = text ? text.split(/\s+/).length : 0;
+        const val = document.getElementById(id+'-text').value.trim();
+        const count = val ? val.split(/\s+/).length : 0;
         document.getElementById(id+'-words').textContent = count;
-        return count;
     }
 
     ['t1','t2'].forEach(id => {
         document.getElementById(id+'-text').addEventListener('input', () => updateWordCount(id));
     });
 
-    function generateFeedback(id) {
-        const count = updateWordCount(id);
-        const modal = document.getElementById('feedback-modal');
-        const content = document.getElementById('feedback-content');
-        
-        modal.style.display = 'flex';
-        content.innerHTML = `
-            <p><strong>Word Count:</strong> ${count}</p>
-            <p><strong>Status:</strong> ${count < (id==='t1'?150:250) ? '⚠️ Under length' : '✅ Good length'}</p>
-            <hr>
-            <p>Great effort! Remember to use varied sentence structures and academic transition words to boost your band score.</p>
-        `;
-    }
-
     function finishTask(id) {
         clearInterval(intervals[id]);
-        alert("Task completed! Check your word count and analysis.");
+        document.getElementById(id+'-text').disabled = true;
+        document.getElementById(id+'-status').textContent = "Status: Completed";
+    }
+
+    function resetTask(id) {
+        if(confirm("Reset everything for this task?")) location.reload();
+    }
+    
+    // Simple alert-based analysis for this version
+    function generateFeedback(id) {
+        const count = document.getElementById(id+'-words').textContent;
+        const target = id === 't1' ? 150 : 250;
+        alert(`Analysis:\nWord Count: ${count}\nTarget: ${target}\nRequirement: ${count >= target ? 'Met' : 'Under length'}`);
     }
 </script>
 
