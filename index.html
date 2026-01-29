@@ -11,6 +11,7 @@
             --secondary: #2c3e50;
             --light: #ecf0f1;
             --accent: #27ae60; /* Green for feedback */
+            --warning: #d35400; /* Orange for Finish button */
         }
 
         body {
@@ -151,7 +152,7 @@
             border-radius: 4px;
             border: 1px solid #ced4da;
             flex-grow: 1;
-            max-width: 60%;
+            max-width: 50%;
         }
 
         .timer {
@@ -172,10 +173,14 @@
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+        }
+
+        button.action-btn.finish {
+            background-color: var(--warning);
         }
 
         button.action-btn:disabled {
@@ -187,11 +192,11 @@
             background-color: #7f8c8d;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 15px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.8rem;
-            margin-left: 10px;
+            font-size: 0.9rem;
+            margin-left: 5px;
         }
 
         .prompt-image-container {
@@ -414,6 +419,7 @@
             <div id="t1-timer" class="timer">20:00</div>
             <div>
                 <button id="t1-btn" class="action-btn" onclick="initiateTimer('t1', 20)">Start Timer</button>
+                <button id="t1-finish-btn" class="action-btn finish" onclick="finishTask('t1')" disabled>Finish Early</button>
                 <button class="reset-btn" onclick="resetTask('t1')">Reset</button>
             </div>
         </div>
@@ -433,7 +439,7 @@
         </div>
 
         <div id="t1-result" class="result-area">
-            <h3>Time is Up!</h3>
+            <h3>Test Completed</h3>
             <button class="dl-btn" onclick="takeScreenshot('t1')">📸 Download Screenshot</button>
             <button class="dl-btn" style="background-color: var(--accent);" onclick="generateFeedback('t1')">📝 Get Feedback</button>
         </div>
@@ -452,6 +458,7 @@
             <div id="t2-timer" class="timer">40:00</div>
             <div>
                 <button id="t2-btn" class="action-btn" onclick="initiateTimer('t2', 40)">Start Timer</button>
+                <button id="t2-finish-btn" class="action-btn finish" onclick="finishTask('t2')" disabled>Finish Early</button>
                 <button class="reset-btn" onclick="resetTask('t2')">Reset</button>
             </div>
         </div>
@@ -469,7 +476,7 @@
         </div>
 
         <div id="t2-result" class="result-area">
-            <h3>Time is Up!</h3>
+            <h3>Test Completed</h3>
             <button class="dl-btn" onclick="takeScreenshot('t2')">📸 Download Screenshot</button>
             <button class="dl-btn" style="background-color: var(--accent);" onclick="generateFeedback('t2')">📝 Get Feedback</button>
         </div>
@@ -583,16 +590,32 @@
     function lockUI(taskId) {
         document.getElementById(taskId + '-select').disabled = true;
         document.getElementById(taskId + '-btn').disabled = true;
+        
+        // Enable finish button
+        document.getElementById(taskId + '-finish-btn').disabled = false;
+        
         document.getElementById(taskId + '-text').disabled = false;
         document.getElementById(taskId + '-text').focus();
         document.getElementById(taskId + '-status').textContent = "Status: Writing...";
     }
 
+    // New Function for finishing early
+    function finishTask(taskId) {
+        if(confirm("Are you sure you want to finish the test early? You won't be able to edit your text afterwards.")) {
+            endTask(taskId);
+        }
+    }
+
     function endTask(taskId) {
         clearInterval(intervals[taskId]);
         localStorage.removeItem(taskId + '_endTime'); 
+        
         document.getElementById(taskId + '-timer').textContent = "00:00";
         document.getElementById(taskId + '-text').disabled = true;
+        
+        // Disable finish button
+        document.getElementById(taskId + '-finish-btn').disabled = true;
+
         document.getElementById(taskId + '-status').textContent = "Status: Finished";
         document.getElementById(taskId + '-result').style.display = 'block';
     }
